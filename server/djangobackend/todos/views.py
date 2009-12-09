@@ -9,6 +9,8 @@ from models import Task
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
 
+# Import cornelius's Dudley
+from cornelius import dudley
 
 # 
 # FIRST: some helpers
@@ -89,3 +91,33 @@ def task(request, taskid):
 	return HttpResponse(
 	  json.dumps({"content": task_to_raw(task)}), 
 	  mimetype="application/json")
+
+
+# ROOTS PUSH COMET!!!!
+from django.db.models.signals import post_save, post_delete
+def connect(request, uid):
+	paths = json.loads(request.raw_post_data)
+	dudley.connect(uid, paths)
+
+def disconnect(request, uid):
+	paths = json.loads(request.raw_post_data)
+	dudley.connect(uid, paths)
+
+# Comet alerters
+def task_saved(sender, **kwargs):
+	try:
+		instance = kwargs["instance"]
+		dudley.update("tasks", json.dumps(task_to_raw(instance)))
+	except:
+		pass
+
+def task_destroyed(sender, **kwargs):
+	try:
+		instance = kwargs["instance"]
+		data = task_to_raw(instance)
+		data["DELETE"] = True
+		dudley.update("tasks", json.dumps(data))
+	except:
+		pass
+post_save.connect(task_saved, sender=Task)
+post_delete.connect(task_destroyed, sender=Task)

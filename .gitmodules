@@ -1,0 +1,6 @@
+[submodule "frameworks/pomona"]
+	path = frameworks/pomona
+	url = git://github.com/ialexi/pomona
+[submodule "server/djangobackend/cornelius"]
+	path = server/djangobackend/cornelius
+	url = git://github.com/ialexi/cornelius.git

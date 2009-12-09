@@ -2,7 +2,7 @@
 // Project:   Todos.TaskDataSource
 // Copyright: ©2009 My Company, Inc.
 // ==========================================================================
-/*globals Todos */
+/*globals Todos,Pomona */
 sc_require('models/task');
 Todos.TASKS_QUERY = SC.Query.local(Todos.Task, {
   orderBy: 'isDone,description'
@@ -21,6 +21,25 @@ Todos.TaskDataSource = SC.DataSource.extend(
   // ..........................................................
   // QUERY SUPPORT
   // 
+  init: function(){
+    // needs proxy /comet/ to dobby
+    this.firenze = Pomona.Firenze.create({
+      connectUrl: "/tasks/connect/%@",
+      disconnectUrl: "/tasks/disconnect/%@"
+    });
+    
+    this.firenze.connect("tasks", this, "taskReceived");
+  },
+  
+  taskReceived: function(path, message) {
+    if (message.trim() === "") return;
+    var data = JSON.parse(message);
+    
+    // handle delete
+    if (data.DELETE) {
+      Todos.store.pushDestroy(Todos.Task, data.guid);
+    } else Todos.store.loadRecords(Todos.Task, [data]);
+  },
 
   fetch: function(store, query) {
 

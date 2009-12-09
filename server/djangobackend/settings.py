@@ -78,4 +78,5 @@ INSTALLED_APPS = (
 	'django.contrib.sessions',
 	'django.contrib.sites',
 	'todos', # ADD THIS LINE
+	'cornelius' # FOR COMET
 )

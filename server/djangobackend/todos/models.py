@@ -1,4 +1,5 @@
 from django.db import models
+from cornelius import dudley
 
 # Create your models here.
 class Task(models.Model):
