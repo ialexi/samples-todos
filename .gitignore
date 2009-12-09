@@ -4,3 +4,5 @@ tmp
 server/todos-merb/log
 log
 
+*.pyc
+*.db
