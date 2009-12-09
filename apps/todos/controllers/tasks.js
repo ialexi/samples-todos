@@ -10,7 +10,7 @@
 
   @extends SC.ArrayController
 */
-Todos.tasksController = SC.ArrayController.create(
+Todos.tasksController = SC.ArrayController.create(SC.CollectionViewDelegate,
 /** @scope Todos.tasksController.prototype */ {
 
   summary: function() {

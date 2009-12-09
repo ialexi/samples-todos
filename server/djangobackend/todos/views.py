@@ -63,9 +63,11 @@ def tasks(request):
 		# attempt to save
 		task.save()
 		
-		# attempt to get id and make url
-		response = HttpResponse("")
-		response["Location"] = task_guid(task)
+		# return just the plain hash
+		# returning Location header causes problems
+		response = HttpResponse(
+			json.dumps({"content":task_to_raw(task)})
+		)
 		response.status = 201
 		return response
 
@@ -76,7 +78,6 @@ def task(request, taskid):
 	if request.method == "GET":
 		pass # do nothing-- the default action will suffice
 	elif request.method == "PUT":
-		print request.raw_post_data
 		raw = json.loads(request.raw_post_data)
 		raw_to_task(raw, task)
 		task.save()

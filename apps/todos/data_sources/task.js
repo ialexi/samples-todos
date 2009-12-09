@@ -79,8 +79,8 @@ Todos.TaskDataSource = SC.DataSource.extend(
 
   didCreateTask: function(response, store, storeKey) {
     if (SC.ok(response)) {
-      var url = response.header('Location');
-      store.dataSourceDidComplete(storeKey, null, url); // update url
+      var data = response.get("body").content;
+      store.dataSourceDidComplete(storeKey, data, data.guid); // update url
 
     } else store.dataSourceDidError(storeKey, response);
   },
