@@ -17,29 +17,38 @@ Todos.TASKS_QUERY = SC.Query.local(Todos.Task, {
 */
 Todos.TaskDataSource = SC.DataSource.extend(
 /** @scope Todos.TaskDataSource.prototype */ {
-
-  // ..........................................................
-  // QUERY SUPPORT
-  // 
+  
   init: function(){
+    // DataSource has no init right now, but what if it adds one?
+    // so, call super function first.
+    sc_super(); 
+	
     // needs proxy /comet/ to dobby
-    this.firenze = Pomona.Firenze.create({
-      connectUrl: "/tasks/connect/%@",
+    this.firenze = Pomona.Firenze.create({    // Firenze is the name of the long-poll system.
+      connectUrl: "/tasks/connect/%@",        // %@ is replaced with the client id
       disconnectUrl: "/tasks/disconnect/%@"
     });
     
+    // tell it to call this.taskReceived when a message is received on path "tasks"
     this.firenze.connect("tasks", this, "taskReceived");
   },
   
+  
   taskReceived: function(path, message) {
-    if (message.trim() === "") return;
-    var data = JSON.parse(message);
+    if (message.trim() === "") return;  // the first time, we receive "" to confirm connection
+    var data = JSON.parse(message);   // we sent a JSON-encoded message from Python
     
-    // handle delete
     if (data.DELETE) {
+      // We set DELETE if the record needed deleting
       Todos.store.pushDestroy(Todos.Task, data.guid);
-    } else Todos.store.loadRecords(Todos.Task, [data]);
+    } else {
+      // otherwise, we should just re-load that record.
+      Todos.store.loadRecords(Todos.Task, [data]);
+    } 
   },
+  // ..........................................................
+  // QUERY SUPPORT
+  // 
 
   fetch: function(store, query) {
 

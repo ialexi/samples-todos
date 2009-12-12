@@ -9,9 +9,6 @@ from models import Task
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
 
-# Import cornelius's Dudley
-from cornelius import dudley
-
 # 
 # FIRST: some helpers
 #
@@ -94,7 +91,8 @@ def task(request, taskid):
 
 
 # ROOTS PUSH COMET!!!!
-from django.db.models.signals import post_save, post_delete
+# Import cornelius's Dudley
+from cornelius import dudley
 def connect(request, uid):
 	paths = json.loads(request.raw_post_data)
 	dudley.connect(uid, paths)
@@ -104,6 +102,7 @@ def disconnect(request, uid):
 	dudley.connect(uid, paths)
 
 # Comet alerters
+from django.db.models.signals import post_save, post_delete
 def task_saved(sender, **kwargs):
 	try:
 		instance = kwargs["instance"]
